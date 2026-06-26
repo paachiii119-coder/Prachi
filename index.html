@@ -1,0 +1,283 @@
+cat > /mnt/user-data/outputs/portfolio.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Portfolio</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0d0f; --surface: #16161a; --card: #1c1c22; --card-hover: #222228;
+    --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.18);
+    --text: #f0f0f2; --muted: #888896; --accent: #7c6af7; --accent-2: #a78bfa;
+    --accent-glow: rgba(124,106,247,0.15); --green: #34d399; --red: #f87171;
+    --font: 'Inter', system-ui, sans-serif; --radius: 14px; --radius-sm: 8px;
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  nav {
+    position: sticky; top: 0; z-index: 100; background: rgba(13,13,15,0.85);
+    backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);
+    padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .nav-logo {
+    font-weight: 700; font-size: 1.1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.02em;
+  }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    background: none; border: none; color: var(--muted); padding: 6px 14px;
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem; font-family: var(--font); transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+  .nav-tab.active { color: var(--text); background: rgba(124,106,247,0.15); }
+  .hero { padding: 5rem 2rem 3rem; max-width: 900px; margin: 0 auto; text-align: center; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-glow); border: 1px solid rgba(124,106,247,0.3);
+    color: var(--accent-2); font-size: 0.78rem; padding: 4px 12px; border-radius: 100px;
+    margin-bottom: 1.5rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem; }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero p { color: var(--muted); font-size: 1.05rem; max-width: 480px; margin: 0 auto 2rem; }
+  .upload-zone {
+    max-width: 680px; margin: 0 auto 3rem; border: 2px dashed var(--border);
+    border-radius: var(--radius); padding: 3rem 2rem; text-align: center;
+    cursor: pointer; transition: all 0.25s; background: var(--surface); position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: var(--accent-glow); }
+  .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon {
+    width: 56px; height: 56px; background: var(--accent-glow);
+    border: 1px solid rgba(124,106,247,0.25); border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 24px; color: var(--accent-2); margin-bottom: 1rem;
+  }
+  .upload-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+  .upload-zone p { color: var(--muted); font-size: 0.85rem; }
+  .upload-types { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+  .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); font-size: 0.75rem; padding: 2px 10px; border-radius: 100px; }
+  .section { max-width: 900px; margin: 0 auto 4rem; padding: 0 2rem; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .section-title { font-size: 1rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .count-badge { background: rgba(124,106,247,0.15); color: var(--accent-2); font-size: 0.72rem; padding: 2px 8px; border-radius: 100px; font-weight: 600; }
+  .clear-btn {
+    background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.8rem;
+    padding: 4px 12px; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font); transition: all 0.2s;
+  }
+  .clear-btn:hover { border-color: var(--red); color: var(--red); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.2s; position: relative; }
+  .card:hover { border-color: var(--border-hover); background: var(--card-hover); transform: translateY(-2px); }
+  .card-preview {
+    width: 100%; aspect-ratio: 16/10; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent-2); position: relative; overflow: hidden;
+  }
+  .card-preview img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .card-preview video { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .card-preview .file-icon { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; position: relative; }
+  .card-preview .file-icon span { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .card-body { padding: 12px 14px; }
+  .card-name { font-size: 0.875rem; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-meta { font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.2s; }
+  .card:hover .card-actions { opacity: 1; }
+  .card-btn {
+    background: rgba(13,13,15,0.85); backdrop-filter: blur(8px); border: 1px solid var(--border-hover); color: var(--text);
+    width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; transition: all 0.15s; text-decoration: none;
+  }
+  .card-btn:hover { background: rgba(124,106,247,0.25); border-color: var(--accent); color: var(--accent-2); }
+  .card-btn.danger:hover { background: rgba(248,113,113,0.15); border-color: var(--red); color: var(--red); }
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .empty i { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; opacity: 0.4; }
+  .empty p { font-size: 0.9rem; }
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--card); border: 1px solid var(--border-hover); color: var(--text);
+    padding: 10px 16px; border-radius: var(--radius-sm); font-size: 0.85rem;
+    display: flex; align-items: center; gap: 8px; animation: slideIn 0.25s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .toast.success { border-color: rgba(52,211,153,0.3); }
+  .toast.error { border-color: rgba(248,113,113,0.3); }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem;
+  }
+  .lightbox-inner { max-width: 80vw; max-height: 80vh; border-radius: var(--radius); overflow: hidden; position: relative; }
+  .lightbox-inner img, .lightbox-inner video { max-width: 80vw; max-height: 80vh; display: block; border-radius: var(--radius); }
+  .lightbox-close {
+    position: absolute; top: -44px; right: 0; background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border-hover); color: white; width: 36px; height: 36px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px;
+  }
+  .profile-bar { max-width: 900px; margin: 0 auto 2rem; padding: 0 2rem; }
+  .profile-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 700; color: white; flex-shrink: 0; position: relative; cursor: pointer; overflow: hidden;
+  }
+  .avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .avatar input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; font-size: 1rem; color: white; }
+  .avatar:hover .avatar-overlay { opacity: 1; }
+  .profile-info { flex: 1; min-width: 200px; }
+  .profile-name { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 2px; border: none; background: none; color: var(--text); font-family: var(--font); width: 100%; padding: 2px 0; }
+  .profile-name:focus { outline: none; border-bottom: 1px solid var(--accent); }
+  .profile-title-input { font-size: 0.875rem; border: none; background: none; color: var(--muted); font-family: var(--font); width: 100%; padding: 2px 0; }
+  .profile-title-input:focus { outline: none; border-bottom: 1px solid var(--accent); color: var(--text); }
+  .profile-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .profile-link { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; padding: 4px 10px; border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; cursor: pointer; }
+  .profile-link:hover { border-color: var(--accent); color: var(--accent-2); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">✦ Portfolio</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('portfolio')">Portfolio</button>
+    <button class="nav-tab" onclick="showSection('about')">About</button>
+  </div>
+</nav>
+
+<div id="portfolio-section">
+  <div class="hero">
+    <div class="hero-badge"><i class="ti ti-sparkles" aria-hidden="true"></i> My Creative Work</div>
+    <h1>Showcase your <span>best work</span></h1>
+    <p>Upload images, videos, PDFs, and documents. Build a portfolio that stands out.</p>
+  </div>
+  <div class="section" style="padding-bottom:0">
+    <div class="upload-zone" id="dropZone">
+      <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.zip,.sketch,.fig"/>
+      <div class="upload-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
+      <h3>Drop your work here</h3>
+      <p>or click to browse files</p>
+      <div class="upload-types">
+        <span class="tag">Images</span><span class="tag">Videos</span><span class="tag">PDF</span>
+        <span class="tag">Docs</span><span class="tag">Figma</span><span class="tag">Sketch</span>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <i class="ti ti-layout-grid" style="color:var(--accent-2)" aria-hidden="true"></i>
+        Projects <span class="count-badge" id="countBadge">0</span>
+      </div>
+      <button class="clear-btn" onclick="clearAll()" id="clearBtn" style="display:none"><i class="ti ti-trash" aria-hidden="true"></i> Clear all</button>
+    </div>
+    <div class="grid" id="grid">
+      <div class="empty" id="emptyState">
+        <i class="ti ti-photo-off" aria-hidden="true"></i>
+        <p>Your portfolio is empty.<br>Upload your first project above.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="about-section" style="display:none">
+  <div class="hero">
+    <div class="hero-badge"><i class="ti ti-user" aria-hidden="true"></i> Profile</div>
+    <h1>Your <span>story</span></h1>
+    <p>Click any field to edit your profile details.</p>
+  </div>
+  <div class="profile-bar">
+    <div class="profile-card">
+      <div class="avatar">
+        <span id="avatarInitials">YN</span>
+        <img id="avatarImg" style="display:none"/>
+        <input type="file" accept="image/*" onchange="changeAvatar(this)"/>
+        <div class="avatar-overlay"><i class="ti ti-camera" aria-hidden="true"></i></div>
+      </div>
+      <div class="profile-info">
+        <input class="profile-name" id="profileName" value="Your Name" placeholder="Your Name" spellcheck="false"/>
+        <input class="profile-title-input" value="Designer & Developer" placeholder="Your title or tagline" spellcheck="false"/>
+      </div>
+      <div class="profile-links">
+        <span class="profile-link"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</span>
+        <span class="profile-link"><i class="ti ti-brand-linkedin" aria-hidden="true"></i> LinkedIn</span>
+        <span class="profile-link"><i class="ti ti-world" aria-hidden="true"></i> Website</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" style="display:none" onclick="closeLightbox(event)">
+  <div class="lightbox-inner" id="lightboxInner">
+    <button class="lightbox-close" onclick="closeLightbox()"><i class="ti ti-x"></i></button>
+  </div>
+</div>
+<div class="toast-container" id="toasts"></div>
+
+<script>
+let items = [];
+function showSection(name) {
+  document.getElementById('portfolio-section').style.display = name==='portfolio'?'block':'none';
+  document.getElementById('about-section').style.display = name==='about'?'block':'none';
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',(name==='portfolio'&&i===0)||(name==='about'&&i===1)));
+}
+function toast(msg,type='success'){
+  const el=document.createElement('div'); el.className=`toast ${type}`;
+  el.innerHTML=`<i class="ti ti-${type==='success'?'check':'alert-circle'}" style="color:${type==='success'?'var(--green)':'var(--red)'}"></i> ${msg}`;
+  document.getElementById('toasts').appendChild(el); setTimeout(()=>el.remove(),3000);
+}
+function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+function getIcon(t){if(t.startsWith('image/'))return'ti-photo';if(t.startsWith('video/'))return'ti-video';if(t==='application/pdf')return'ti-file-type-pdf';if(t.includes('zip'))return'ti-file-zip';if(t.includes('word')||t.includes('doc'))return'ti-file-type-doc';return'ti-file';}
+function getExt(n){return n.split('.').pop().toUpperCase();}
+function renderGrid(){
+  const grid=document.getElementById('grid'),cb=document.getElementById('countBadge'),clr=document.getElementById('clearBtn'),es=document.getElementById('emptyState');
+  cb.textContent=items.length; clr.style.display=items.length?'':'none';
+  if(!items.length){if(es)es.style.display='';return;}
+  if(es)es.style.display='none';
+  const ex=new Set(Array.from(grid.querySelectorAll('.card')).map(c=>c.dataset.id));
+  items.forEach(item=>{
+    if(ex.has(item.id))return;
+    const card=document.createElement('div'); card.className='card'; card.dataset.id=item.id;
+    let ph='';
+    if(item.type.startsWith('image/'))ph=`<img src="${item.url}" alt="${item.name}" loading="lazy"/>`;
+    else if(item.type.startsWith('video/'))ph=`<video src="${item.url}" muted></video><div class="file-icon" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4)"><i class="ti ti-player-play" style="font-size:2rem;color:white;opacity:0.9"></i></div>`;
+    else ph=`<div class="file-icon"><i class="ti ${getIcon(item.type)}" style="font-size:2rem"></i><span>${getExt(item.name)}</span></div>`;
+    card.innerHTML=`<div class="card-preview">${ph}</div><div class="card-body"><div class="card-name" title="${item.name}">${item.name}</div><div class="card-meta"><span>${formatSize(item.size)}</span><span>·</span><span>${new Date(item.date).toLocaleDateString()}</span></div></div><div class="card-actions">${item.type.startsWith('image/')||item.type.startsWith('video/')?`<button class="card-btn" onclick="openLightbox('${item.id}')" title="Preview"><i class="ti ti-eye"></i></button>`:''}<a class="card-btn" href="${item.url}" download="${item.name}" title="Download"><i class="ti ti-download"></i></a><button class="card-btn danger" onclick="removeItem('${item.id}')" title="Remove"><i class="ti ti-trash"></i></button></div>`;
+    grid.appendChild(card);
+  });
+}
+function handleFiles(files){
+  let added=0;
+  Array.from(files).forEach(file=>{items.push({id:Date.now()+Math.random().toString(36).slice(2),name:file.name,type:file.type,size:file.size,url:URL.createObjectURL(file),date:Date.now()});added++;});
+  if(added)toast(`${added} file${added>1?'s':''} added`);
+  renderGrid();
+}
+function removeItem(id){items=items.filter(i=>i.id!==id);document.querySelector(`.card[data-id="${id}"]`)?.remove();renderGrid();toast('Removed','error');}
+function clearAll(){if(!confirm('Remove all items?'))return;items=[];document.querySelectorAll('.card').forEach(c=>c.remove());renderGrid();}
+function openLightbox(id){
+  const item=items.find(i=>i.id===id);if(!item)return;
+  const inner=document.getElementById('lightboxInner');
+  inner.innerHTML=`<button class="lightbox-close" onclick="closeLightbox()"><i class="ti ti-x"></i></button>`;
+  if(item.type.startsWith('image/')){const img=document.createElement('img');img.src=item.url;img.alt=item.name;inner.appendChild(img);}
+  else if(item.type.startsWith('video/')){const v=document.createElement('video');v.src=item.url;v.controls=true;v.autoplay=true;inner.appendChild(v);}
+  document.getElementById('lightbox').style.display='flex';
+}
+function closeLightbox(e){if(e&&e.target!==document.getElementById('lightbox'))return;document.getElementById('lightbox').style.display='none';document.querySelector('.lightbox-inner video')?.pause();}
+function changeAvatar(input){const file=input.files[0];if(!file)return;const img=document.getElementById('avatarImg');img.src=URL.createObjectURL(file);img.style.display='block';document.getElementById('avatarInitials').style.display='none';toast('Profile photo updated');}
+document.getElementById('profileName').addEventListener('input',function(){document.getElementById('avatarInitials').textContent=this.value.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'YN';});
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');handleFiles(e.dataTransfer.files);});
+document.getElementById('fileInput').addEventListener('change',e=>handleFiles(e.target.files));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+renderGrid();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done"
